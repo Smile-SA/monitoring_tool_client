@@ -5,7 +5,7 @@ services:
 
   monitoring_tool_client.module_collector:
     class: Drupal\monitoring_tool_client\Service\ModuleCollectorService
-    arguments: ['@config.factory', '@module_handler', '@monitoring_tool_client.database']
+    arguments: ['@config.factory', '@module_handler', '@monitoring_tool_client.database', '@update.update_hook_registry']
 
   monitoring_tool_client.client_api:
     class: Drupal\monitoring_tool_client\Service\ClientApiService
