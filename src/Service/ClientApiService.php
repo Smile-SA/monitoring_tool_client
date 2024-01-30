@@ -4,6 +4,8 @@ namespace Drupal\monitoring_tool_client\Service;
 
 /**
  * Class ClientApiService.
+ *
+ * The ClientApiService class.
  */
 class ClientApiService implements ClientApiServiceInterface {
 
@@ -43,7 +45,7 @@ class ClientApiService implements ClientApiServiceInterface {
   public function sendRequest() {
     return $this->serverConnector->send([
       'modules' => $this->moduleCollector->getModules(),
-      'db_update_status' => $this->moduleCollector->pendingDBUpdates(),
+      'db_update_status' => $this->moduleCollector->pendingDbUpdates(),
     ]);
   }
 

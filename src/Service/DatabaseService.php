@@ -3,9 +3,12 @@
 namespace Drupal\monitoring_tool_client\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\update\UpdateProcessorInterface;
 
 /**
  * Class DatabaseService.
+ *
+ * The DatabaseService class.
  */
 class DatabaseService implements DatabaseServiceInterface {
 
@@ -17,13 +20,23 @@ class DatabaseService implements DatabaseServiceInterface {
   protected $configFactory;
 
   /**
+   * Update processor.
+   *
+   * @var \Drupal\update\UpdateProcessorInterface
+   */
+  protected $updateProcessor;
+
+  /**
    * CollectModulesService constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Configuration manager.
+   * @param \Drupal\update\UpdateProcessorInterface $update_processor
+   *   Update processor.
    */
-  public function __construct(ConfigFactoryInterface $config_factory) {
+  public function __construct(ConfigFactoryInterface $config_factory, UpdateProcessorInterface $update_processor) {
     $this->configFactory = $config_factory;
+    $this->updateProcessor = $update_processor;
   }
 
   /**
@@ -35,20 +48,11 @@ class DatabaseService implements DatabaseServiceInterface {
     $skip = $settings->get('skip_drupal_database_update');
 
     if (!$skip) {
-      $this->loadIncludes();
-      $updates = update_get_update_list();
+      $data = $this->updateProcessor->fetchData();
+      $updates = $data['projects'];
     }
 
     return $updates;
-  }
-
-  /**
-   * Loads a module update and install include files.
-   */
-  private function loadIncludes() {
-    require_once DRUPAL_ROOT . '/core/includes/update.inc';
-    require_once DRUPAL_ROOT . '/core/includes/install.inc';
-    drupal_load_updates();
   }
 
 }

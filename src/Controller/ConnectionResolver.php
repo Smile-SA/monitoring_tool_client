@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ConnectionResolver.
+ *
+ * The ConnectionResolver class.
  */
 class ConnectionResolver implements ContainerInjectionInterface {
 

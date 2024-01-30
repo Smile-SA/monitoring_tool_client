@@ -4,12 +4,14 @@ namespace Drupal\monitoring_tool_client\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\Extension;
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Update\UpdateHookRegistry;
-use Drupal\monitoring_tool_client\Service\DatabaseServiceInterface;
 
 /**
  * Class ModuleCollectorService.
+ *
+ * The ModuleCollectorService class.
  */
 class ModuleCollectorService implements ModuleCollectorServiceInterface {
 
@@ -42,6 +44,13 @@ class ModuleCollectorService implements ModuleCollectorServiceInterface {
   protected $updateRegistry;
 
   /**
+   * The module extension list.
+   *
+   * @var \Drupal\Core\Extension\ModuleExtensionList
+   */
+  protected $moduleExtensionList;
+
+  /**
    * CollectModulesService constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -52,17 +61,21 @@ class ModuleCollectorService implements ModuleCollectorServiceInterface {
    *   The list of Drupal core and modules database updates.
    * @param \Drupal\Core\Update\UpdateHookRegistry $update_registry
    *   The update registry service.
+   * @param \Drupal\Core\Extension\ModuleExtensionList $extension_list_module
+   *   The module extension list.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
     ModuleHandlerInterface $module_handler,
     DatabaseServiceInterface $database,
-    UpdateHookRegistry $update_registry
+    UpdateHookRegistry $update_registry,
+    ModuleExtensionList $extension_list_module
   ) {
     $this->configFactory = $config_factory;
     $this->moduleHandler = $module_handler;
     $this->database = $database;
     $this->updateRegistry = $update_registry;
+    $this->moduleExtensionList = $extension_list_module;
   }
 
   /**
@@ -74,7 +87,7 @@ class ModuleCollectorService implements ModuleCollectorServiceInterface {
     $skip_list = $configuration->get('skip_updates');
     /** @var \Drupal\Core\Extension\Extension[] $module_list */
     $module_list = array_filter(
-      \Drupal::service("extension.list.module")->getList(),
+      $this->moduleExtensionList->getList(),
       [static::class, 'filterContribModules']
     );
 
@@ -91,7 +104,7 @@ class ModuleCollectorService implements ModuleCollectorServiceInterface {
     ];
 
     foreach ($module_list as $module_name => $module) {
-      $info = isset($module->info) ? $module->info : [];
+      $info = $module->info ?? [];
       $result[$module_name] = [
         'machine_name' => $module->getName(),
         'name' => $info['name'],
@@ -116,7 +129,7 @@ class ModuleCollectorService implements ModuleCollectorServiceInterface {
    *   Filter or not.
    */
   public static function filterContribModules(Extension $module) {
-    $info = isset($module->info) ? $module->info : [];
+    $info = $module->info ?? [];
 
     if (
       isset($info['project']) &&
@@ -141,7 +154,7 @@ class ModuleCollectorService implements ModuleCollectorServiceInterface {
    * @return bool
    *   Has pending database updates or not.
    */
-  public function pendingDBUpdates() {
+  public function pendingDbUpdates() {
     // Check installed modules.
     $has_pending_updates = FALSE;
     foreach ($this->moduleHandler->getModuleList() as $module => $filename) {

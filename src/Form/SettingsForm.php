@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class SettingsForm.
+ *
+ * The SettingsForm class.
  */
 class SettingsForm extends FormBase {
 
@@ -79,7 +81,7 @@ class SettingsForm extends FormBase {
       '#type' => 'checkbox',
       '#parents' => ['webhook'],
       '#title' => $this->t('Wait for webhook'),
-      '#description' => $this->t('<b>Important!</b> The report will be sent after triggering via webhook from central server. <br> Uncheck the checkbox in case if the project is Application or don\'t have public www address.'),
+      '#description' => $this->t("<b>Important!</b> The report will be sent after triggering via webhook from central server. <br> Uncheck the checkbox in case if the project is Application or don't have public www address."),
       '#default_value' => $config->get('webhook'),
     ];
 

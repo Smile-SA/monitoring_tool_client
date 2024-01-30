@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Trait AccessCheckTrait.
+ *
+ * The AccessCheckTrait trait.
  */
 trait AccessCheckTrait {
 

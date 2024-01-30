@@ -4,6 +4,8 @@ namespace Drupal\monitoring_tool_client\Service;
 
 /**
  * Interface ModuleCollectorServiceInterface.
+ *
+ * The ModuleCollectorServiceInterface Interface.
  */
 interface ModuleCollectorServiceInterface {
 

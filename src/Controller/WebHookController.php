@@ -14,6 +14,8 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
  * Class WebHookController.
+ *
+ * The WebHookController class.
  */
 class WebHookController implements ContainerInjectionInterface {
 

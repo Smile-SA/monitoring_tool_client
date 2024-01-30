@@ -2,8 +2,10 @@
 
 namespace Drupal\monitoring_tool_client\Service;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Site\Settings;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\RequestOptions;
@@ -11,6 +13,8 @@ use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Class ServerConnectorService.
+ *
+ * The ServerConnectorService class.
  */
 class ServerConnectorService implements ServerConnectorServiceInterface {
 
@@ -36,20 +40,43 @@ class ServerConnectorService implements ServerConnectorServiceInterface {
   protected $configFactory;
 
   /**
+   * The time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $time;
+
+  /**
+   * The drupal logger factory service.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   */
+  protected $loggerFactory;
+
+  /**
    * ServerConnectorService constructor.
    *
    * @param \GuzzleHttp\ClientInterface $http_client
    *   Guzzle HTTP client.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   Configuration manager.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
+   * @param \Drupal\Core\Logger\LoggerChannelFactory $loggerFactory
+   *   The logger factory service.
    */
   public function __construct(
     ClientInterface $http_client,
-    ConfigFactoryInterface $config_factory
+    ConfigFactoryInterface $config_factory,
+    TimeInterface $time,
+    LoggerChannelFactory $loggerFactory
   ) {
     $this->httpClient = $http_client;
     $this->settings = Settings::get('monitoring_tool', []) + ['options' => []];
     $this->configFactory = $config_factory;
+    $this->time = $time;
+    $this->loggerFactory = $loggerFactory->get('monitoring_tool_client');
+    ;
   }
 
   /**
@@ -63,7 +90,7 @@ class ServerConnectorService implements ServerConnectorServiceInterface {
       $default_options = [
         RequestOptions::JSON => !empty($data) ? $data : NULL,
         RequestOptions::QUERY => [
-          'time' => \Drupal::time()->getCurrentTime(),
+          'time' => $this->time->getCurrentTime(),
         ],
         RequestOptions::ALLOW_REDIRECTS => TRUE,
         RequestOptions::VERIFY => FALSE,
@@ -76,8 +103,11 @@ class ServerConnectorService implements ServerConnectorServiceInterface {
 
       try {
         return $this->httpClient->request($method, $url, $options);
-      } catch (GuzzleException $exception) {
-        watchdog_exception('monitoring_tool_client', $exception);
+      }
+      catch (GuzzleException $exception) {
+        $this->loggerFactory->error('Error during Guzzle request: @message', [
+          '@message' => $exception->getMessage(),
+        ]);
       }
     }
 

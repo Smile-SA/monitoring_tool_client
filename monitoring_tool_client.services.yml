@@ -1,11 +1,11 @@
 services:
   monitoring_tool_client.server_connector:
     class: Drupal\monitoring_tool_client\Service\ServerConnectorService
-    arguments: ['@http_client', '@config.factory']
+    arguments: ['@http_client', '@config.factory', '@datetime.time', '@@logger.factory']
 
   monitoring_tool_client.module_collector:
     class: Drupal\monitoring_tool_client\Service\ModuleCollectorService
-    arguments: ['@config.factory', '@module_handler', '@monitoring_tool_client.database', '@update.update_hook_registry']
+    arguments: ['@config.factory', '@module_handler', '@monitoring_tool_client.database', '@update.update_hook_registry', '@extension.list.module'']
 
   monitoring_tool_client.client_api:
     class: Drupal\monitoring_tool_client\Service\ClientApiService
@@ -13,4 +13,4 @@ services:
 
   monitoring_tool_client.database:
     class: Drupal\monitoring_tool_client\Service\DatabaseService
-    arguments: ['@config.factory']
+    arguments: ['@config.factory', '@update.processor']

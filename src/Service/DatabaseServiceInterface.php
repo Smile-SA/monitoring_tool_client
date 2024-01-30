@@ -4,6 +4,8 @@ namespace Drupal\monitoring_tool_client\Service;
 
 /**
  * Interface DatabaseServiceInterface.
+ *
+ * The DatabaseServiceInterface Interface.
  */
 interface DatabaseServiceInterface {
 
