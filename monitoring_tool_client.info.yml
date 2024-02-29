@@ -3,3 +3,5 @@ description: Will collect and send report about the system structure.
 package: Web services
 type: module
 core_version_requirement: ^9.3 || ^10
+dependencies:
+  - drupal:update
